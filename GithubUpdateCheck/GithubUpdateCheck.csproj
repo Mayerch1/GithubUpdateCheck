@@ -4,6 +4,19 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Mayerch1.GithubUpdateCheck</AssemblyName>
     <RootNamespace>Mayerch1.GithubUpdateCheck</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Christian Mayer</Authors>
+    <Product>GithubUpdateCheck</Product>
+    <Description>Compares a version string with the latest release on a specified repository.
+Supports async requests
+Currently the versioning 1.0.0.0, 1.0.0 and v.1.0.0 (and combinations) are supported (v. can be any non-number)</Description>
+    <Copyright>(c) - Christian Mayer 2019</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/Mayerch1/GithubUpdateCheck</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Mayerch1/GithubUpdateCheck</RepositoryUrl>
+    <PackageTags>Github, Version, VersionCheck, UpdateCheck, Update</PackageTags>
+    <PackageReleaseNotes>This is the first release. Only versions with the Pattern 1.0.0.0, 1.0.0 or v.1.0.0 (and combinations) supported</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -13,5 +26,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\GithubVersionChecker.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
