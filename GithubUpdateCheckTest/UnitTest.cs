@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace GithubUpdateCheckTest
 {
+    //TODO: test for Boolean compare
+    // null check aswell
+    // check for new constructor on incremental
+
     /// <summary>
     /// Unit test of the GithubUpdateCheck
     /// As the update checker needs a connection to github for almost all funcionality, this is closer to an integration test than a unit test

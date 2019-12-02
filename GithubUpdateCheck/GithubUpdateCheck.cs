@@ -32,6 +32,22 @@ namespace Mayerch1.GithubUpdateCheck
         Revision = 4
     }
 
+
+    /// <summary>
+    /// Specifies the algorithm for comparing the local and the remote version number
+    /// </summary>
+    public enum CompareType
+    {
+        /// <summary>
+        /// Compares versions of the pattern 1.2.3.4 (e.g. 2.0.0 is higher than 1.9999.0)
+        /// </summary>
+        Incremental = 0,
+        /// <summary>
+        /// If the remote string is different, it will assume an update
+        /// </summary>
+        Boolean = 1
+    }
+
     /// <summary>
     /// The exception that is thrown if the version argument does not match the required pattern
     /// </summary>
@@ -55,6 +71,7 @@ namespace Mayerch1.GithubUpdateCheck
 
         private string Username;
         private string Repository;
+        private CompareType cmpType;
 
         /// <summary>
         /// Assumes version numbering with the pattern 1.2.3.4
@@ -65,6 +82,21 @@ namespace Mayerch1.GithubUpdateCheck
         {
             this.Username = Username;
             this.Repository = Repository;
+            cmpType = CompareType.Incremental;
+        }
+
+
+        /// <summary>
+        /// Choose the compare system based on <see cref="CompareType"/>
+        /// </summary>
+        /// <param name="Username">Username of Repository owner</param>
+        /// <param name="Repository">Name of Github Repository</param>
+        /// <param name="compareType">Method to compare the local with the remote version</param>
+        public GithubUpdateCheck(string Username, string Repository, CompareType compareType)
+        {
+            this.Username = Username;
+            this.Repository = Repository;
+            cmpType = compareType;
         }
 
 
@@ -75,7 +107,25 @@ namespace Mayerch1.GithubUpdateCheck
         /// <returns></returns>
         private bool isValidInput(string version)
         {
-            // currently accepeted pattern:
+            switch (cmpType)
+            {
+                case CompareType.Incremental:
+                    return isValidInputIncremental(version);
+
+                // boolean is fallback, because it accepts the widest range of input
+                case CompareType.Boolean:
+                default:
+                    return isValidInputBoolean(version);
+            }
+        }
+
+        /// <summary>
+        /// Tests if inputted version is valid based on the allowed/specified patterns
+        /// </summary>
+        /// <param name="version">Current software version, is compared against the github version</param>
+        /// <returns></returns>
+        private bool isValidInputIncremental(string version)
+        {
             // 1.0.0.0
             // 1.0.0
             // v.1.0.0
@@ -89,11 +139,42 @@ namespace Mayerch1.GithubUpdateCheck
 
 
         /// <summary>
+        /// Tests if inputted version is not null
+        /// </summary>
+        /// <param name="version">Current software version, is compared against the github version</param>
+        /// <returns></returns>
+        private bool isValidInputBoolean(string version)
+        {
+            return (version != null);
+        }
+
+
+        /// <summary>
+        /// Removes leading v. and v from the string
+        /// </summary>
+        /// <param name="version">string must pass <see cref="isValidInput(string)"/></param>
+        /// <returns>normalized string</returns>
+        private string normalizeVersionString(string version)
+        {
+            switch (cmpType)
+            {
+                case CompareType.Incremental:
+                    return normalizeVersionStringIncremental(version);
+
+                // boolean is fallback, because it accepts the widest range of input
+                case CompareType.Boolean:
+                default:
+                    return normalizeVersionStringBoolean(version);
+            }
+        }
+
+
+        /// <summary>
         /// Removes leading v. and v from the string
         /// </summary>
         /// <param name="version">string which is compliant to the allowed pattern(s)</param>
         /// <returns>normalized string</returns>
-        private string normalizeVersionString(string version)
+        private string normalizeVersionStringIncremental(string version)
         {
             // leading (v. or v ) are allowed
             // therefore remove those from the version number
@@ -103,6 +184,16 @@ namespace Mayerch1.GithubUpdateCheck
             return match.Value;
         }
 
+        /// <summary>
+        /// returns version, only to keep consistency
+        /// </summary>
+        /// <param name="version">string which is compliant to the allowed pattern(s)</param>
+        /// <returns>normalized string</returns>
+        private string normalizeVersionStringBoolean(string version)
+        {
+            // the boolean compare takes the version as is
+            return version;
+        }
 
 
         /// <summary>
@@ -110,7 +201,7 @@ namespace Mayerch1.GithubUpdateCheck
         /// If the webservice is not available this function will assume no updates available
         /// </summary>
         /// <param name="CurrentVersion">The version of the software wich is compared to the github version</param>
-        /// <param name="VersionChange">The granularity of the comparison. Any version change smaller than this will be ignored. (e.g. Minor will check for a change in the first 2 digits groups)</param>
+        /// <param name="VersionChange">The granularity of the comparison. Any version change smaller than this will be ignored. (e.g. Minor will check for a change in the first 2 digits groups). Does not apply to <see cref="CompareType.Boolean"/></param>
         /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
         /// <returns>bool - true if a newer version is available, false - if no newer version is available or if no connection to github is available</returns>
         public async Task<bool> IsUpdateAvailableAsync(string CurrentVersion, VersionChange VersionChange = VersionChange.Minor)
@@ -134,7 +225,7 @@ namespace Mayerch1.GithubUpdateCheck
         /// If the webservice is not available this function will assume no updates available
         /// </summary>
         /// <param name="CurrentVersion">The version of the software wich is compared to the github version</param>
-        /// <param name="VersionChange">The granularity of the comparison. Any version change smaller than this will be ignored. (e.g. Minor will check for a change in the first 2 digits groups)</param>
+        /// <param name="VersionChange">The granularity of the comparison. Any version change smaller than this will be ignored. (e.g. Minor will check for a change in the first 2 digits groups). Does not apply to <see cref="CompareType.Boolean"/></param>
         /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
         /// <returns>bool - true if a newer version is available, false - if no newer version is available or if no connection to github is available</returns>
         public bool IsUpdateAvailable(string CurrentVersion, VersionChange VersionChange = VersionChange.Minor)
@@ -154,25 +245,25 @@ namespace Mayerch1.GithubUpdateCheck
         }
 
 
-
         /// <summary>
         /// Compares two version numbers. Extract version number of github release url
         /// "Current" must comply with pattern, aswell as github version
+        /// Respects the selected compareType
         /// </summary>
         /// <param name="current">Local software version, must be checket for complinance with the allowed pattern(s)</param>
         /// <param name="github">Url of the latest github release</param>
-        /// <param name="changeLevel">The level for comparison</param>
+        /// <param name="changeLevel">The level for comparison. Does not apply to Boolean compare</param>
         /// /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
-        /// <returns></returns>
+        /// <returns>true if a newer version is available</returns>
         private bool compareVersions(string current, string github, VersionChange changeLevel)
         {
+            // extract the tag from the url and validate/normalize input
             //no releases yet
             if (!github.Contains("/tag/"))
                 return false;
 
             //get everything after last /tag/
             github = github.Substring(github.LastIndexOf("/tag/") + "/tag/".Length);
-
 
             if (!isValidInput(github))
             {
@@ -181,7 +272,48 @@ namespace Mayerch1.GithubUpdateCheck
 
             github = normalizeVersionString(github);
 
-            // separate version into VersionChange
+
+
+            // choose CompareType specific compare method
+            switch (cmpType)
+            {
+                case CompareType.Incremental:
+                    return compareVersionsIncremental(current, github, changeLevel);
+
+                // boolean is fallback, because it accepts the widest range of input
+                case CompareType.Boolean:
+                default:
+                    return compareVersionsBoolean(current, github);
+            }
+
+        }
+
+
+        /// <summary>
+        /// Compares two version numbers. Extract version number of github release url
+        /// Assumes update is available, if remote version is different to "current"
+        /// </summary>
+        /// <param name="current">Local software version</param>
+        /// <param name="github">extracted, validated and normalized version string of the remote repo</param>        
+        /// /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
+        /// <returns></returns>
+        private bool compareVersionsBoolean(string current, string github)
+        {
+            // if they are different, an update is available
+            return current != github;
+        }
+
+        /// <summary>
+        /// Compares two version numbers. Extract version number of github release url
+        /// "Current" must comply with pattern, aswell as github version
+        /// </summary>
+        /// <param name="current">Local software version, must be checket for complinance with the allowed pattern(s)</param>
+        /// <param name="github">extracted, validated and normalized version string of the remote repo</param>
+        /// <param name="changeLevel">The level for comparison</param>
+        /// /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
+        /// <returns></returns>
+        private bool compareVersionsIncremental(string current, string github, VersionChange changeLevel)
+        {            
             // input is tested for numbers only between the seperators ('.')
             Int64[] currentArr = Array.ConvertAll(current.Split('.'), s => Int64.Parse(s));
             Int64[] gitArr = Array.ConvertAll(github.Split('.'), s => Int64.Parse(s));
@@ -197,19 +329,19 @@ namespace Mayerch1.GithubUpdateCheck
             /* comparison of version numbers as follows
 
                        localMajor <> gitMajor
-                [smalle]      [equals]       [greater]
+                [smaller]      [equals]       [greater]
                  true            |               false
                                  V
                        localMinor <> gitMinor
-                [smalle]      [equals]       [greater]
+                [smaller]      [equals]       [greater]
                  true            |               false
                                  V
                        localBuild <> gitBuild
-                [smalle]      [equals]       [greater]
+                [smaller]      [equals]       [greater]
                  true            |               false
                                  V
                         localRev. <> gitRev.
-                [smalle]      [equals]       [greater]
+                [smaller]      [equals]       [greater]
                  true          false            false
 
                 // if cmpDepth is reached at any time
