@@ -74,6 +74,16 @@ namespace Mayerch1.GithubUpdateCheck
         private CompareType cmpType;
 
         /// <summary>
+        /// Get the set compare type. (Getter only)
+        /// </summary>
+        public CompareType CompareType
+        {
+            get => cmpType;
+        }
+
+
+
+        /// <summary>
         /// Assumes version numbering with the pattern 1.2.3.4
         /// </summary>
         /// <param name="Username">Username of Repository owner</param>
@@ -97,6 +107,30 @@ namespace Mayerch1.GithubUpdateCheck
             this.Username = Username;
             this.Repository = Repository;
             cmpType = compareType;
+        }
+
+
+        /// <summary>
+        /// Compare two instances. If all (private) members are equal, the object is considered equal
+        /// </summary>
+        /// <param name="a">first instance</param>
+        /// <param name="b">second instance</param>
+        /// <returns>true if all members are equal</returns>
+        public static bool operator ==(GithubUpdateCheck a, GithubUpdateCheck b)
+        {
+            // all members must be the same
+            return (a.Username == b.Username) && (a.Repository == b.Repository) && (a.cmpType == b.cmpType);
+        }
+
+        /// <summary>
+        /// Compare two instances. If at least one (private) members is different, the object is considered not-equal
+        /// </summary>
+        /// <param name="a">first instance</param>
+        /// <param name="b">second instance</param>
+        /// <returns>true if at least one member is different</returns>
+        public static bool operator != (GithubUpdateCheck a, GithubUpdateCheck b)
+        {
+            return !(a == b);
         }
 
 
@@ -126,15 +160,22 @@ namespace Mayerch1.GithubUpdateCheck
         /// <returns></returns>
         private bool isValidInputIncremental(string version)
         {
-            // 1.0.0.0
-            // 1.0.0
-            // v.1.0.0
-            // v1.0.0
-            // and any combination of those
-            string pattern = @"^([^0-9]\.{0,1}){0,1}\d+\.\d+\.\d+(\.\d+){0,1}$";
-            Match match = Regex.Match(version, pattern);
+            if (version != null)
+            {
+                // 1.0.0.0
+                // 1.0.0
+                // v.1.0.0
+                // v1.0.0
+                // and any combination of those
+                string pattern = @"^([^0-9]\.{0,1}){0,1}\d+\.\d+\.\d+(\.\d+){0,1}$";
+                Match match = Regex.Match(version, pattern);
 
-            return match.Success;
+                return match.Success;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 

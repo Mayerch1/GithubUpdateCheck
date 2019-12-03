@@ -5,17 +5,13 @@ using System.Threading.Tasks;
 
 namespace GithubUpdateCheckTest
 {
-    //TODO: test for Boolean compare
-    // null check aswell
-    // check for new constructor on incremental
-
     /// <summary>
-    /// Unit test of the GithubUpdateCheck
+    /// Unit test of the GithubUpdateCheck. Tests CompareType.Inrcemental specific functionality
     /// As the update checker needs a connection to github for almost all funcionality, this is closer to an integration test than a unit test
     /// This unit test can take more than 20s runtime
     /// </summary>
     [TestClass]
-    public class UnitTest
+    public class UnitTestIncremental
     {
         [TestMethod]
         public void TestValidVersionPattern()
@@ -41,6 +37,17 @@ namespace GithubUpdateCheckTest
 
 
         }
+
+        [TestMethod]
+        public void TestNullPattern()
+        {
+            GithubUpdateCheck obj = new GithubUpdateCheck("", "");
+
+            Assert.ThrowsException<Mayerch1.GithubUpdateCheck.InvalidVersionException>(() => obj.IsUpdateAvailable(null));
+        }
+
+
+        
 
         [TestMethod]
         // Assert.Throws is not available for async methods
@@ -95,59 +102,6 @@ namespace GithubUpdateCheckTest
             Assert.ThrowsException<Mayerch1.GithubUpdateCheck.InvalidVersionException>(() => obj.IsUpdateAvailable(version));            
         }
 
-
-        [TestMethod]
-        public void TestNoRelease()
-        {        
-            // this repo doesn't have releases
-            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "BunnyVisual");
-            Assert.IsFalse(obj.IsUpdateAvailable("1.0.0.0"));
-        }
-
-
-        [TestMethod]
-        public void TestInvalidRepository()
-        {
-            // random uuid, high change for non-existent repo
-            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "cb91fb82-9621-479a-9c5a-23e565e6390d");
-            obj.IsUpdateAvailable("1.0.0.0");
-        }
-
-        [TestMethod]
-        public void TestInvalidUser()
-        {
-            // random uuid, high change for non-existent repo
-            GithubUpdateCheck obj = new GithubUpdateCheck("5fe54fd3-2fd8-48ff-8f63-1b8575348b5f", "GithubUpdateCheck");
-            obj.IsUpdateAvailable("1.0.0.0");
-        }
-
-
-        [TestMethod]
-        public async Task TestAsyncRequest()
-        {
-            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "TheDiscordSoundboard");
-
-            // it cannot be guaranteed, that the major version of TDS will stay at 2
-            // more specific compares cannot be made
-            Assert.IsTrue(await obj.IsUpdateAvailableAsync("1.0.0", VersionChange.Major));
-        }
-
-
-        [TestMethod]
-        public async Task TestInvalidRepositoryAsync()
-        {
-            // random uuid, high change for non-existent repo
-            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "cb91fb82-9621-479a-9c5a-23e565e6390d");
-            await obj.IsUpdateAvailableAsync("1.0.0.0");
-        }
-
-        [TestMethod]
-        public async Task TestInvalidUserAsync()
-        {
-            // random uuid, high change for non-existent repo
-            GithubUpdateCheck obj = new GithubUpdateCheck("5fe54fd3-2fd8-48ff-8f63-1b8575348b5f", "GithubUpdateCheck");
-            await obj.IsUpdateAvailableAsync("1.0.0.0");
-        }
 
 
         [TestMethod]
@@ -242,6 +196,7 @@ namespace GithubUpdateCheckTest
             GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest2");
             Assert.ThrowsException<Mayerch1.GithubUpdateCheck.InvalidVersionException>(() => obj.IsUpdateAvailable("1.0.0"));
         }
+
 
     }
 }
