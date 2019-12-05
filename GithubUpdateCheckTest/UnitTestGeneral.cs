@@ -76,6 +76,73 @@ namespace GithubUpdateCheckTest
 
 
         [TestMethod]
+        public void TestNullInvertTrue()
+        {
+            GithubUpdateCheck obj = null;
+            Assert.IsTrue(null == obj);
+        }
+
+        [TestMethod]
+        public void TestNullInvertFalse()
+        {
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Boolean);
+
+            Assert.IsFalse(null == obj);
+        }
+
+        [TestMethod]
+        public void TestEqualNullTrue()
+        {
+            GithubUpdateCheck obj = null;
+
+            Assert.IsTrue(obj == null);
+        }
+
+        [TestMethod]
+        public void TestEqualNullFalse()
+        {
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Boolean);
+
+            Assert.IsFalse(obj == null);
+        }
+
+
+        [TestMethod]
+        public void TestNotEqualNullTrue()
+        {
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Boolean);
+
+            Assert.IsTrue(obj != null);
+        }
+
+        [TestMethod]
+        public void TestNotEqualNullFalse()
+        {
+            GithubUpdateCheck obj = null;
+
+            Assert.IsFalse(obj != null);
+        }
+
+        [TestMethod]
+        public void TestEqualsMethodFalse()
+        {
+            GithubUpdateCheck aCmpType = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Boolean);
+            GithubUpdateCheck bCmpType = new GithubUpdateCheck("DIFFERENT", "GithubUpdateCheck", CompareType.Boolean);
+
+            Assert.IsFalse(aCmpType.Equals(bCmpType));
+        }
+
+
+        [TestMethod]
+        public void TestEqualsMethodTrue()
+        {
+            GithubUpdateCheck aCmpType = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Incremental);
+            GithubUpdateCheck bCmpType = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheck", CompareType.Incremental);
+                        
+            Assert.IsTrue(aCmpType.Equals(bCmpType));
+        }
+
+        [TestMethod]
         public void TestNullConstructor()
         {
             // if the repo is invalid, 

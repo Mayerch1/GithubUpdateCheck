@@ -47,8 +47,6 @@ namespace GithubUpdateCheckTest
         }
 
 
-        
-
         [TestMethod]
         // Assert.Throws is not available for async methods
         [ExpectedException(typeof(Mayerch1.GithubUpdateCheck.InvalidVersionException))]
@@ -65,19 +63,16 @@ namespace GithubUpdateCheckTest
         {
             // should throw before web request is made
             GithubUpdateCheck obj = new GithubUpdateCheck("", "");
-
-            // too many groups            
-            TestInvalidVersionPattern_Wrapper(obj, "1.0.0.0.0");
+            
 
             // invalid prefix
             TestInvalidVersionPattern_Wrapper(obj, "vv.1.0.0.0.0");
             TestInvalidVersionPattern_Wrapper(obj, "vv1.0.0.0.0");
 
             // not enough groups
-            TestInvalidVersionPattern_Wrapper(obj, "1.0");
-            TestInvalidVersionPattern_Wrapper(obj, "1");
             TestInvalidVersionPattern_Wrapper(obj, "");
             TestInvalidVersionPattern_Wrapper(obj, " ");
+            TestInvalidVersionPattern_Wrapper(obj, null);
 
             // invalid character
             TestInvalidVersionPattern_Wrapper(obj, "1.a0.0.0.0");
@@ -195,6 +190,38 @@ namespace GithubUpdateCheckTest
         {
             GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest2");
             Assert.ThrowsException<Mayerch1.GithubUpdateCheck.InvalidVersionException>(() => obj.IsUpdateAvailable("1.0.0"));
+        }
+
+
+        [TestMethod]
+        public void TestExceedEnumDepth()
+        {
+            // current release is 2.4.1.5
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest");
+
+            // version must be same as obj (otherwise compare will stop before limit is reached) 
+            Assert.IsFalse(obj.IsUpdateAvailable("2.4.1.5.99.4.6", (VersionChange)7));
+        }
+
+        [TestMethod]
+        public void TestExceedLocalDepth()
+        {
+            // current release is 2.4.1.5
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest");
+
+            // passed version must be same as obj's version (otherwise compare will stop before the limit is reached)
+            Assert.IsFalse(obj.IsUpdateAvailable("2.4", VersionChange.Minor));
+        }
+
+        [TestMethod]
+        public void TestExceedRemoteDepth()
+        {
+            // current release is 2.4.1.5
+            GithubUpdateCheck obj = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest");
+
+            // version must be same as obj (otherwise compare will stop before limit is reached)
+            // this tests TesExceedEnumDepth at the same time (creating repo only for this test is too much overhead)
+            Assert.IsFalse(obj.IsUpdateAvailable("2.4.1.5.10", (VersionChange)5));
         }
 
 
