@@ -9,14 +9,18 @@
     <Authors>Christian Mayer</Authors>
     <Product>GithubUpdateCheck</Product>
     <Description>Compares a version string with the latest release on a specified repository.
-Supports async requests
-Currently the versioning 1.0.0.0, 1.0.0 and v.1.0.0 (and combinations) are supported (v. can be any non-number)</Description>
+* Supports async requests
+* Incremental versioning 1.0.0.0, 1.0.0 and v.1.0.0 (and combinations) are supported (v. can be any non-number)
+* Boolean versioning (assume update as soon local and remote are not equal)</Description>
     <Copyright>(c) - Christian Mayer 2019</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Mayerch1/GithubUpdateCheck</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Mayerch1/GithubUpdateCheck</RepositoryUrl>
     <PackageTags>Github, Version, VersionCheck, UpdateCheck, Update</PackageTags>
-    <PackageReleaseNotes>This is the first release. Only versions with the Pattern 1.0.0.0, 1.0.0 or v.1.0.0 (and combinations) supported</PackageReleaseNotes>
+    <PackageReleaseNotes>Add boolean compare as an option. (Will assume an update as soon as the local version is not matching the remote version)</PackageReleaseNotes>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
