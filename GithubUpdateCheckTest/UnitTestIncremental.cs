@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Mayerch1.GithubUpdateCheck;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GithubUpdateCheckTest
 {
@@ -11,6 +12,7 @@ namespace GithubUpdateCheckTest
     /// This unit test can take more than 20s runtime
     /// </summary>
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UnitTestIncremental
     {
         [TestMethod]
