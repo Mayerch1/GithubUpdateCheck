@@ -12,15 +12,16 @@
 * Supports async requests
 * Incremental versioning 1.0.0.0, 1.0.0 and v.1.0.0 (and combinations) are supported (v. can be any non-number)
 * Boolean versioning (assume update as soon local and remote are not equal)</Description>
-    <Copyright>(c) - Christian Mayer 2019</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>(c) - Christian Mayer 2020</Copyright>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Mayerch1/GithubUpdateCheck</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Mayerch1/GithubUpdateCheck</RepositoryUrl>
     <PackageTags>Github, Version, VersionCheck, UpdateCheck, Update</PackageTags>
-    <PackageReleaseNotes>Add boolean compare as an option. (Will assume an update as soon as the local version is not matching the remote version)</PackageReleaseNotes>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <PackageReleaseNotes>project is now distributed under MIT. (Change from GPLv3 to MIT)</PackageReleaseNotes>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Version>1.2.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,13 +31,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\GithubVersionChecker.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">

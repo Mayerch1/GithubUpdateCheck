@@ -1,13 +1,18 @@
 # GithubUpdateCheck
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![GitHub](https://img.shields.io/github/license/mayerch1/GithubUpdateCheck)
 &nbsp;
 [![Nuget](https://img.shields.io/nuget/v/Mayerch1.GithubUpdateCheck)](https://www.nuget.org/packages/Mayerch1.GithubUpdateCheck/)
 &nbsp;
 [![GitHub release](https://img.shields.io/github/release/mayerch1/GithubUpdateCheck.svg)](https://github.com/mayerch1/GithubUpdateCheck/releases/latest)
 
-NuGet package to check if an update is available. Always compares to the latest github release
+NuGet package to check for available updtaes. Always compares to the latest github release.
 
+***NOTE:*** from version 1.2.0 this project is distributed under MIT. If you wish to continue using GPL, you need to use older versions up to 1.1.0. 
+
+(Distribution under more restrictive licenses may be possible on request, but I do not see any reason for anyone to do so).
+
+---
 
 ## Usage
 Create an instance of the `GithubUpdateCheck` and specify your Github username and Github repository, as seen in the url.
