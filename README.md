@@ -6,7 +6,7 @@
 &nbsp;
 [![GitHub release](https://img.shields.io/github/release/mayerch1/GithubUpdateCheck.svg)](https://github.com/mayerch1/GithubUpdateCheck/releases/latest)
 
-NuGet package to check for available updtaes. Always compares to the latest github release.
+NuGet package to check for available updates. Always compares to the latest github release.
 
 ***NOTE:*** from version 1.2.0 this project is distributed under MIT. If you wish to continue using GPL, you need to use older versions up to 1.1.0. 
 
