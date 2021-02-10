@@ -342,6 +342,13 @@ namespace Mayerch1.GithubUpdateCheck
 
         }
 
+        /// <summary>
+        /// <para>Compares the current software version to the latest release on github. Asynchronous web request</para>
+        /// If the webservice is not available this function will assume no updates available
+        /// </summary>
+        /// <param name="CurrentVersion">The version of the software which is compared to the github version</param>
+        /// <exception cref="InvalidVersionException">Is thrown if the supplied version or the remote version does not match the allowed version pattern</exception>
+        /// <returns>bool - true if a newer version is available, false - if no newer version is available or if no connection to github is available</returns>
         public async Task<bool> IsUpdateAvailableAsync(string CurrentVersion)
         {
             if (!IsValidInput(CurrentVersion))
