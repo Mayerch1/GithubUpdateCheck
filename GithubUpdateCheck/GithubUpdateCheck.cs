@@ -342,6 +342,22 @@ namespace Mayerch1.GithubUpdateCheck
 
         }
 
+        public async Task<bool> IsUpdateAvailableAsync(string CurrentVersion)
+        {
+            if (!IsValidInput(CurrentVersion))
+            {
+                throw new InvalidVersionException(CurrentVersion + " does not follow the specified version pattern [CurrentVersion]");
+            }
+            string resolved = await GetResponseUrlAsync(githubUrl + Username + "/" + Repository + latestVersionString).ConfigureAwait(false);
+
+            if (resolved != null)
+                return CompareVersions(NormalizeVersionString(CurrentVersion), resolved);
+            else
+                return false;
+
+
+        }
+
         /// <summary>
         /// <para>Compares the current software version to the latest release on github. Synchronous (blocking) web request</para>
         /// If the webservice is not available this function will assume no updates available
@@ -366,6 +382,69 @@ namespace Mayerch1.GithubUpdateCheck
                 return false;
         }
 
+        /// <summary>
+        /// <para>Compares the current software version to the latest release on github. Synchronous (blocking) web request</para>
+        /// If the webservice is not available this function will assume no updates available
+        /// </summary>
+        /// <param name="CurrentVersion">The version of the software which is compared to the github version</param>
+        /// <exception cref="InvalidVersionException">Is thrown if the supplied version or the remote version does not match the allowed version pattern</exception>
+        /// <returns>bool - true if a newer version is available, false - if no newer version is available or if no connection to github is available</returns>
+        public bool IsUpdateAvailable(string CurrentVersion)
+        {
+            if (!IsValidInput(CurrentVersion))
+            {
+                throw new InvalidVersionException(CurrentVersion + " does not follow the specified version pattern [CurrentVersion]");
+            }
+
+
+            string resolved = GetResponseUrl(githubUrl + Username + "/" + Repository + latestVersionString);
+
+            if (resolved != null)
+                return CompareVersions(NormalizeVersionString(CurrentVersion), resolved);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Compares two version numbers. Extract version number of github release url
+        /// "Current" must comply with pattern, as well as github version
+        /// </summary>
+        /// <param name="current">Local software version, must be checked for compliance with the allowed pattern(s)</param>
+        /// <param name="github">Url of the latest github release</param>
+        /// <exception cref="InvalidVersionException">Is thrown if the supplied version does not match the allowed version pattern</exception>
+        /// <returns>true if a newer version is available</returns>
+        private bool CompareVersions(string current, string github)
+        {
+            // extract the tag from the url and validate/normalize input
+            //no releases yet
+            if (!github.Contains("/tag/"))
+                return false;
+
+
+            //get everything after last /tag/
+            int indexOfTag = CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(github, "/tag/");
+            github = github.Substring(indexOfTag + "/tag/".Length);
+
+            if (!IsValidInput(github))
+            {
+                throw new InvalidVersionException(github + " the github version number does not follow the specified version pattern [Remote error]");
+            }
+
+            github = NormalizeVersionString(github);
+
+
+            var currentValid = Version.TryParse(current, out var currentVersion);
+            var githubValid = Version.TryParse(github, out var githubVersion);
+
+            if (currentValid && githubValid)
+            {
+                return currentVersion < githubVersion;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Compares two version numbers. Extract version number of github release url
