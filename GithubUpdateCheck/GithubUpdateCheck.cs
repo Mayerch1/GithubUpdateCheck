@@ -292,11 +292,11 @@ namespace Mayerch1.GithubUpdateCheck
         /// <summary>
         /// Returns the latest version on github
         /// </summary>
-        /// <returns>string</returns>
+        /// <returns>normalized string</returns>
         public string Version()
         {
             string resolved = GetResponseUrl(githubUrl + Username + "/" + Repository + latestVersionString);
-            string version = NormalizeVersionStringIncremental(resolved);
+            string version = NormalizeVersionString(resolved);
             return version;
         }
         /// <summary>
