@@ -12,15 +12,15 @@
 * Supports async requests
 * Incremental versioning 1.0.0.0, 1.0.0 and v.1.0.0 (and combinations) are supported (v. can be any non-number)
 * Boolean versioning (assume update as soon local and remote are not equal)</Description>
-    <Copyright>(c) - Christian Mayer 2020</Copyright>
+    <Copyright>(c) - Christian Mayer 2022</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Mayerch1/GithubUpdateCheck</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Mayerch1/GithubUpdateCheck</RepositoryUrl>
     <PackageTags>Github, Version, VersionCheck, UpdateCheck, Update</PackageTags>
-    <PackageReleaseNotes>project is now distributed under MIT. (Change from GPLv3 to MIT)</PackageReleaseNotes>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
-    <Version>1.2.0</Version>
+    <PackageReleaseNotes>Added methods to get the current repo version</PackageReleaseNotes>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <FileVersion>1.2.1.0</FileVersion>
+    <Version>1.2.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 

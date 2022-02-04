@@ -86,6 +86,38 @@ namespace Mayerch1.GithubUpdateCheck
 
 
     /// <summary>
+    /// The exception is thrown if the remote repo does not have releases
+    /// </summary>
+    public class NoVersionException: InvalidVersionException
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NoVersionException"/> class
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public NoVersionException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NoVersionException"/> class with a specified error message
+        /// </summary>        
+        public NoVersionException(String message) : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NoVersionException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
+        [ExcludeFromCodeCoverage]
+        public NoVersionException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
+
+    /// <summary>
     /// Checks if your github repo is on a newer version or not
     /// </summary>
 #pragma warning disable CA1724 // Do not warn about namespace/classname conflict
@@ -272,6 +304,31 @@ namespace Mayerch1.GithubUpdateCheck
 
 
         /// <summary>
+        /// strip the given url, to only contain the github version (not normalized)
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns>striped repo version string</returns>
+        private string ExtractVersionFromUrl(string url)
+        {
+            // extract the tag from the url and validate/normalize input
+            //no releases yet
+            if (!url.Contains("/tag/"))
+                throw new NoVersionException(url + " the github version number does not contain \"tag\" in its path. Usually occurs when no release exists. [Remote error]");
+
+            //get everything after last /tag/
+            int indexOfTag = CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(url, "/tag/");
+            url = url.Substring(indexOfTag + "/tag/".Length);
+
+            if (!IsValidInput(url))
+            {
+                throw new InvalidVersionException(url + " the github version number does not follow the specified version pattern [Remote error]");
+            }
+
+            return url;
+        }
+
+
+        /// <summary>
         /// Removes leading v. and v from the string
         /// </summary>
         /// <param name="version">string must pass <see cref="IsValidInput(string)"/></param>
@@ -289,16 +346,43 @@ namespace Mayerch1.GithubUpdateCheck
                     return NormalizeVersionStringBoolean(version);
             }
         }
+
         /// <summary>
-        /// Returns the latest version on github
+        /// Returns the latest version on github.
         /// </summary>
+        /// <exception cref="InvalidVersionException">Is thrown if the supplied version or the remote version does not match the allowed version pattern</exception>
+        /// <exception cref="NoVersionException">Is thrown if the remote repo does not have any releases</exception>
+        /// <returns>normalized string</returns>
+        public async Task<string> VersionAsync()
+        {
+            string resolved = await GetResponseUrlAsync(githubUrl + Username + "/" + Repository + latestVersionString).ConfigureAwait(false);
+            return extractVersion(resolved);
+        }
+
+        /// <summary>
+        /// Returns the latest version on github.
+        /// </summary>
+        /// <exception cref="InvalidVersionException">Is thrown if the supplied version or the remote version does not match the allowed version pattern</exception>
+        /// <exception cref="NoVersionException">Is thrown if the remote repo does not have any releases</exception>
         /// <returns>normalized string</returns>
         public string Version()
         {
             string resolved = GetResponseUrl(githubUrl + Username + "/" + Repository + latestVersionString);
-            string version = NormalizeVersionString(resolved);
+            return extractVersion(resolved);
+        }
+
+        /// <summary>
+        /// extract the normalized version from the given url, may throw <see cref="NoVersionException"/>
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private string extractVersion(string url)
+        {
+            string extract = ExtractVersionFromUrl(url);  // strip the url part
+            string version = NormalizeVersionString(extract);
             return version;
         }
+
         /// <summary>
         /// Removes leading v. and v from the string
         /// </summary>
@@ -387,24 +471,16 @@ namespace Mayerch1.GithubUpdateCheck
         /// <returns>true if a newer version is available</returns>
         private bool CompareVersions(string current, string github, VersionChange changeLevel)
         {
-            // extract the tag from the url and validate/normalize input
-            //no releases yet
-            if (!github.Contains("/tag/"))
-                return false;
-
-
-            //get everything after last /tag/
-            int indexOfTag = CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(github, "/tag/");            
-            github = github.Substring(indexOfTag + "/tag/".Length);
-
-            if (!IsValidInput(github))
+            try
             {
-                throw new InvalidVersionException(github + " the github version number does not follow the specified version pattern [Remote error]");
+                github = extractVersion(github);
             }
-
-            github = NormalizeVersionString(github);
-
-
+            catch (NoVersionException)
+            {
+                // assume this is equivalent to no update
+                return false;
+            }
+ 
 
             // choose CompareType specific compare method
             switch (cmpType)

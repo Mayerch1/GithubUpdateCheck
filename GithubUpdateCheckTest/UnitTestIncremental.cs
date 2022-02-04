@@ -226,6 +226,13 @@ namespace GithubUpdateCheckTest
             Assert.IsFalse(obj.IsUpdateAvailable("2.4.1.5.10", (VersionChange)5));
         }
 
+        [TestMethod]
+        public void TestGetVersionInvalidVersion()
+        {
+            // repo doesn't have releases
+            GithubUpdateCheck getV = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest2", CompareType.Incremental);
+            Assert.ThrowsException<Mayerch1.GithubUpdateCheck.InvalidVersionException>(() => getV.Version());
+        }
 
     }
 }

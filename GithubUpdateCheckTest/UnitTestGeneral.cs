@@ -203,5 +203,32 @@ namespace GithubUpdateCheckTest
             GithubUpdateCheck obj = new GithubUpdateCheck("5fe54fd3-2fd8-48ff-8f63-1b8575348b5f", "GithubUpdateCheck");
             Assert.IsFalse(await obj.IsUpdateAvailableAsync("1.0.0.0"));
         }
+
+        [TestMethod]
+        public void TestGetVersionIncremental()
+        {
+            GithubUpdateCheck getV = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest", CompareType.Incremental);
+            var version = getV.Version();
+
+            Assert.IsTrue(version.Equals("2.4.1.5"));
+        }
+
+        [TestMethod]
+        public void TestGetVersionBoolean()
+        {
+            GithubUpdateCheck getV = new GithubUpdateCheck("Mayerch1", "GithubUpdateCheckUnitTest", CompareType.Boolean);
+            var version = getV.Version();
+
+            Assert.IsTrue(version.Equals("v.2.4.1.5"));
+        }
+
+        [TestMethod]
+        public void TestGetVersionNoVersion()
+        {
+            // repo doesn't have releases
+            GithubUpdateCheck getV = new GithubUpdateCheck("Mayerch1", "BunnyVisual", CompareType.Incremental);
+            Assert.ThrowsException<Mayerch1.GithubUpdateCheck.NoVersionException>(() => getV.Version());
+        }
+
     }
 }
